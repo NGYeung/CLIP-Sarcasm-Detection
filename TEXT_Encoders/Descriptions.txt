@@ -1,0 +1,3 @@
+
+Please add model descriptions here when you upload the models onto github.
+Please also name your file with the following format: Modelname_contributor.extension
