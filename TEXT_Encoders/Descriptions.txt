@@ -1,3 +1,8 @@
 
 Please add model descriptions here when you upload the models onto github.
 Please also name your file with the following format: Modelname_contributor.extension
+
+
+model: Word2Vec CBOW (continuous bag of word)
+  Filename: Yiyang_W2V
+  Description: Included one model trained with the dataset and a pretrained model. Can be used as baseline model.
