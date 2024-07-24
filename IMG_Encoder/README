@@ -5,4 +5,5 @@ Please also name your file with the following format: Modelname_contributor.exte
 
 model: VIT DINOv2
   Filename: Yiyang_VIT
-  Description: Included a brief evaluation of the VIT DINOv2 model using our dataset.
+  Description: Included a brief evaluation of the VIT DINOv2 model using our dataset. Included the implementation of Attention Rollout in 
+https://doi.org/10.48550/arXiv.2005.00928
