@@ -1,4 +1,8 @@
-This file will serve as an description of the image models to choose
 
-Please write down the decriptions with the following format: 
-Contributer -- filename -- Model Name -- Description
+Please add model descriptions here when you upload the models onto github.
+Please also name your file with the following format: Modelname_contributor.extension
+
+
+model: VIT DINOv2
+  Filename: Yiyang_VIT
+  Description: Included a brief evaluation of the VIT DINOv2 model using our dataset.
