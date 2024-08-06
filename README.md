@@ -6,7 +6,7 @@ This project aims to the build a ranking system for <b> MEMES </b>
 
 
 # methodology
-*INPUT: Images and Captions of <b> MEMES </b>*
+*INPUT: The caption of a <b> MEMES </b>*
 
 *OUTPUT: The top 10 most relevant memes in the dataset.*
 
