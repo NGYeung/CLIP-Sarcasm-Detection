@@ -8,12 +8,18 @@ This project aims to the build a ranking system for <b> MEMES </b>
 # Methodology
 *INPUT: The caption of a <b> MEMES </b>*
 
-*OUTPUT: The top 10 most relevant memes in the dataset.*
+*OUTPUT: The top 10 most relevant memes in the dataset ranked by a similarity score that weighs both text-text similarity and text-image correlation.*
+
+*MODEL: A variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilledBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.*
+
 
 Here is a flow chart drawn by an awesome artist. (ME.)
-<br>
+
 
 <img src = 'https://github.com/NGYeung/summer-2024-meme-ranking/blob/711622da3760d8c1f3522b0912d323ce95fb32a9/readme-images/flowchart.jpg'>
+
+<br>
+
 
 # Dataset
 
