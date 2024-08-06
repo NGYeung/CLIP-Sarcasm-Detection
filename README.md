@@ -1,4 +1,4 @@
-# A Meme ranking system using constractive learning
+# A meme ranking system using constractive learning
 
 This project aims to the build a ranking system for <b> MEMES </b>
 
