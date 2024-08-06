@@ -1,4 +1,4 @@
-# summer-2024-meme-rank
+# summer-2024-meme-ranking
 
 This project aims to the build a ranking system for <b> MEMES </b>
 
