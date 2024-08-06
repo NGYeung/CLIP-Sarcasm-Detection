@@ -3,6 +3,7 @@ Created on Thu Aug 5
 
 @author: Yiyang Liu
 
+
 """
 
 import numpy as np 
@@ -31,6 +32,51 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from transformers import DistilBertModel
+
+
+
+
+
+
+
+"""
+Image-Text-Contrastive loss.
+Reference: https://arxiv.org/pdf/2103.00020v1 the CLIP Paper
+Reference for the "target": https://arxiv.org/pdf/2103.00020v1
+"""
+
+class I_T_ContrastiveLoss(nn.Module):
+    def __init__(self, temp):
+        super().__init__()
+        self.scale = 1.0/temp
+
+
+    def logits(self, image_features, text_features):
+        V_image = self.scale * image_features @ text_features.T
+        V_text = self.scale * text_features @ image_features.T
+        return V_image, V_text
+
+    def forward(self, image_features, text_features):
+        
+        device = image_features.device
+        V_image, V_text = self.logits(image_features, text_features)
+        dim = image_features.size(0) #need to check the dimension here 
+
+        
+        target = self.scale * (image_features @ image_features.T + text_features @ text_features.T)/2
+
+        total_loss = (
+            F.cross_entropy(V_image, target) +
+            F.cross_entropy(V_text, target)
+        ) / 2
+
+        return total_loss
+
+
+
+
+
+
 
 """
 CLIP with 1) Doc2Vec / BERT - DINOv2 / TBD
@@ -85,32 +131,7 @@ class clip_for_meme(nn.Module):
 
         return F.normalize(image_embed, dim=-1), F.normalize(text_embed, dim=-1)
     
-
-"""
-Image-Text-Contrastive loss.
-"""
-class I_T_ContrastiveLoss(nn.Module):
-    def __init__(self, temp):
-        super().__init__()
-        self.scale = 1.0/temp
-
-
-    def get_logits(self, image_features, text_features):
-        per_image = self.scale * image_features @ text_features.T
-        per_text = self.scale * text_features @ image_features.T
-        return per_image, per_text
-
-    def forward(self, image_features, text_features):
-        
-        device = image_features.device
-        per_image, per_text = self.get_logits(image_features, text_features)
-        dim = image_features.size(0) #need to check the dimension here 
-
-        identity = self.scale * torch.eye( dim, device = device, dtype = torch.long)
-
-        total_loss = (
-            F.cross_entropy(per_image, identity) +
-            F.cross_entropy(per_text, identity)
-        ) / 2
-
-        return total_loss
+    
+    
+    
+    
