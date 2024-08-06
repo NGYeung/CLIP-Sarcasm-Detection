@@ -10,8 +10,9 @@ This project aims to the build a ranking system for <b> MEMES </b>
 
 *OUTPUT: The top 10 most relevant memes in the dataset.*
 
-Here is a flow chart drawn by an awesome artist --<b> ME </b>.
+Here is a flow chart drawn by an awesome artist. (ME.)
 
+<img src = 'https://github.com/NGYeung/summer-2024-meme-ranking/blob/711622da3760d8c1f3522b0912d323ce95fb32a9/readme-images/flowchart.jpg'>
 
 # structure of the repository
 
