@@ -7,6 +7,7 @@ This project aims to the build a ranking system for <b> MEMES </b>
 
 # methodology
 *INPUT: Images and Captions of <b> MEMES </b>*
+
 *OUTPUT: The top 10 most relevant memes in the dataset.*
 
 Here is flow chart drawn by an awesome artist --<b> ME </b>.
