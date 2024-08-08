@@ -57,7 +57,15 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
     epoch_loss = np.mean(epoch_loss)
     return epoch_loss
 
-def evaluation(val_data_loader, model, loss_fn, device):
+def evaluation(text,val_data_loader, model, loss_fn, device, batch_size):
+    
+    
+    test_img_dir = "Images_test/"
+    test_text_path = "TEXT_test_sentences.cvs"
+   
+    # Create the dataset and dataloader
+    test_dataset = Meme_DataSet(img_dir = test_img_dir)
+    test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True, num_workers=8)
     
     ### Local Parameters
     epoch_loss = []
@@ -68,7 +76,7 @@ def evaluation(val_data_loader, model, loss_fn, device):
 
     with torch.no_grad():
         ###Iterating over data loader
-        for images, input_ids, attention_mask in val_data_loader:
+        for images, input_ids, attention_mask, tokentype_id in test_loader:
             
             #Loading data and labels to device
             images = images.to(device)
@@ -76,21 +84,17 @@ def evaluation(val_data_loader, model, loss_fn, device):
             attention_mask = attention_mask.to(device)
 
             #Forward
-            dino_features, bert_features = model(images, input_ids, attention_mask)
+            img_features, text_features = model(images, input_ids, attention_mask)
             #Calculating Loss
-            _loss = loss_fn(dino_features, bert_features)
+            _loss = loss_fn(img_features, text_features)
             epoch_loss.append(_loss.item())
             
             # calculate acc per minibatch
-            logits,_ = loss_fn.get_logits(dino_features, bert_features)
-            labels = loss_fn.get_ground_truth(dino_features.device, dino_features.shape[0])
-            sum_correct_pred += (torch.argmax(logits,dim=-1) == labels).sum().item()
-            total_samples += len(labels)
-
-    acc = round(sum_correct_pred/total_samples,4)*100
+            logits_t,_ = loss_fn.get_logits(img_features, text_features)
+            
     ###Acc and Loss
     epoch_loss = np.mean(epoch_loss)
-    return 
+    return epoch_loss, logits_t
 
 
 def train(batch_size, epochs):
@@ -98,7 +102,7 @@ def train(batch_size, epochs):
     LOAD DATA
     """
     # Define the paths to the dataset and annotations
-    i_dir = "'Images/"
+    i_dir = "Images/"
    
     # Create the dataset and dataloader
     train_dataset = Meme_DataSet(img_dir = i_dir)
