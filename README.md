@@ -23,5 +23,18 @@ Here is a flow chart drawn by an awesome artist. (ME.)
 
 # Dataset
 
+We used the <a href ='https://www.kaggle.com/datasets/williamscott701/memotion-dataset-7k'> MEMOTION DATASET 7K </a> as our training and testing dataset. 
+
+Selected features: Images and Captions.
+
+Training set size: 7000
+
+Testing set size: 2000
+
 # Structure of the repository
 
+*The implementation of clip model is in the "custom_models" folder. *
+
+*The trainer module "CLIP_trainer.py" and training note of the model is in the root folder.*
+
+*The Datasets folder includes a sample of images and texts and the Dataset class in CLIP_Datasets.py*
