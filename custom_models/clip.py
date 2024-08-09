@@ -19,10 +19,10 @@ import nltk
 #nltk.download('punkt')
 from nltk.tokenize import word_tokenize, sent_tokenize
 #import multiprocessing
-from gensim.models.doc2vec import Doc2Vec
-from gensim.models.phrases import Phrases, Phraser
-import gensim.downloader as api
-from gensim.models import KeyedVectors
+#from gensim.models.doc2vec import Doc2Vec
+#from gensim.models.phrases import Phrases, Phraser
+#import gensim.downloader as api
+#from gensim.models import KeyedVectors
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer
 from sklearn.decomposition import PCA
@@ -46,9 +46,9 @@ Reference for the "target": https://arxiv.org/pdf/2103.00020v1
 """
 
 class I_T_ContrastiveLoss(nn.Module):
-    def __init__(self, temp):
+    def __init__(self, temperature):
         super().__init__()
-        self.scale = 1.0/temp
+        self.scale = 1.0/temperature
 
 
     def logits(self, image_features, text_features):
@@ -82,7 +82,7 @@ class I_T_ContrastiveLoss(nn.Module):
 CLIP with 1) Doc2Vec / BERT - DINOv2 / TBD
 """  
 class clip_for_meme(nn.Module):
-    def __init__(self, text_encoder='BERT', image_encoder='DINOv2', n_size=196 ,vector_len=300):
+    def __init__(self, text_encoder='BERT', image_encoder='DINOv2', embedding_size=768 ,projection_size=256):
         
         '''
         text_encoder = 'Doc2Vec' or 'BERT'
@@ -96,16 +96,22 @@ class clip_for_meme(nn.Module):
             self.image_model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vitb14')
             self.img_projection = nn.Sequential(
                 nn.Dropout(0.1),
-                nn.Linear(n_size, vector_len),
+                nn.Linear(embedding_size, projection_size),
+                nn.GELU(),
+                nn.Linear(projection_size, projection_size),
+                nn.LayerNorm(projection_size)
                 )
             
         if text_encoder == 'BERT':
             self.text_model = DistilBertModel.from_pretrained("distilbert-base-uncased")
             self.txt_projection = nn.Sequential(
                 nn.Dropout(0.1),
-                nn.Linear(n_size, vector_len),
+                nn.Linear(embedding_size, projection_size),
+                nn.GELU(),
+                nn.Linear(projection_size, projection_size),
+                nn.LayerNorm(projection_size)
                 )
-        
+        '''
         if text_encoder == 'Doc2Vec':
             # not properly debugged yet. Also no good pre-trained doc2vec to use :/
             self.text_model = Doc2Vec(vector_size=vector_len,  
@@ -118,15 +124,17 @@ class clip_for_meme(nn.Module):
                 nn.Linear(n_size, vector_len),
                 )
             #need an extra method to train the Doc2Vec because, again, no good pre-trained model to use
+            '''
         
 
     
     def forward(self, images, input_ids, attention_mask):
-        image_embed = self.image_encoder(images)
+        image_embed = self.image_model(images)
+        emb_len = image_embed.size(1)
         image_embed = self.img_projection(image_embed)
 
-        text_out = self.bert(input_ids=input_ids, attention_mask=attention_mask)
-        text_embed = text_out['last_hidden_state'][:,0,:] # [CLS] tokens at index 0
+        text_out = self.text_model(input_ids=input_ids, attention_mask=attention_mask)
+        text_embed = text_out['last_hidden_state'][:,0,:] # [CLS] tokens at index 
         text_embed = self.txt_projection(text_embed)
 
         return F.normalize(image_embed, dim=-1), F.normalize(text_embed, dim=-1)
