@@ -12,8 +12,9 @@ plt.style.use('fivethirtyeight')
 import warnings
 import os, sys
 import cv2
+from torchvision import transforms
 from transformers import AutoImageProcessor, AutoModel
-from transformers import BertTokenizer
+from transformers import DistilBertTokenizer
 import torch
 from PIL import Image
 import requests
@@ -23,7 +24,9 @@ from transformers import ViTModel, ViTFeatureExtractor
 class Meme_DataSet():
     
         
-    def __init__(self, img_dir, text_file ='TEXT_sentences.csv' ,img_model = 'DINOv2', text_model = 'DistilledBert'):
+    def __init__(self, img_dir, text_file ='Datasets/TEXT_sentences.csv' ,img_model = 'DINOv2', text_model = 'DistilledBert'):
+    
+        
 
         self.text_path = text_file
         self.img_dir = img_dir
@@ -34,65 +37,57 @@ class Meme_DataSet():
         
         # Fill in the efficient net
         if text_model == 'DistilledBert':
-            self.text_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+            self.text_tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
         self.images = []
         self.text = []
 
     def __len__(self):
-        return len(self.img_labels)
+        item_list = os.listdir(self.img_dir)
+        return len(item_list)
 
     def __getitem__(self, idx):
-        #idx_lst = [i for i in range(len(os.listdir(self.img_dir)))]
-        #Image_set = []
         
-        #IMAGE at entry 0
-            
-        image_batch = []
-        item_list = os.listdir(self.img_dir)[idx]
-        ct = 0
-        for item in item_list:
-            ct += 1
-            img_path = os.path.join(self.img_dir,item)
-            image = cv2.imread(img_path)
-            image = cv2.resize(image,(224, 224))
-            image_batch.append(image)
-        image_batch = np.vstack(image_batch).reshape(ct,224,224,3)
-        print(image_batch.shape)
+        maxlength = 60 # REMEMBER TO ADJUST THIS!!!!!!!!
+        text = pd.read_csv(self.text_path)
+        self.text = list(text['text_corrected'])[idx]
+      
+        ct = len(os.listdir(self.img_dir)[idx])
+        img_path = os.path.join(self.img_dir, os.listdir(self.img_dir)[idx])
+     
+        
+        transform = transforms.Compose([
+                               transforms.ToPILImage(),
+                               transforms.Resize((224, 224)),
+                               transforms.ToTensor()
+                                ])
+        image_batch = transform(cv2.imread(img_path))
+           
+   
         if self.img_preprocess:
             image = self.img_preprocess(images = image_batch, return_tensors = 'pt')
+ 
             
         
         
         #CAPTION at entry 1
-        maxlength = 20 # REMEMBER TO ADJUST THIS!!!!!!!!
-        text = pd.read_csv(self.text_path)
-        self.text = list(text['text_corrected'])[idx]
-        text_batch = self.text_tokenizer.batch_encode_plus(
+
+        text_batch = self.text_tokenizer.encode_plus(
             self.text,
             add_special_tokens=True,  # Add [CLS] and [SEP]
             max_length=maxlength,
-            padding='max_length',  # Pad to max_length
+            padding='max_length',
             truncation=True,  # Truncate to max_length
             return_attention_mask=True,  # Return attention masks
             return_tensors='pt'  # Return PyTorch tensors
+            
             )
-        
-        return [image, text_batch['input_ids'], text_batch['attention_mask'], text_batch['token_type_ids']]
+      
+       
+        return {'image': image['pixel_values'], 'input_ids': text_batch['input_ids'], 'attention': text_batch['attention_mask']}
     
     def getimages(self, idx):
         '''
-        Use to return unprocessed image
-        
-
-        Parameters
-        ----------
-        idx : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        TYPE
-            DESCRIPTION.
+        Used to return unprocessed image
 
         '''
         for i in idx:
@@ -104,5 +99,7 @@ class Meme_DataSet():
             
         return self.images
     
+    
+
 
         
