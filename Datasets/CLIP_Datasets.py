@@ -20,6 +20,7 @@ from PIL import Image
 import requests
 from transformers import Dinov2Config, Dinov2Model
 from transformers import ViTModel, ViTFeatureExtractor
+import io
 
 class Meme_DataSet():
     
@@ -60,7 +61,30 @@ class Meme_DataSet():
                                transforms.Resize((224, 224)),
                                transforms.ToTensor()
                                 ])
-        image_batch = transform(cv2.imread(img_path))
+        
+        
+        transform = transforms.Compose([
+            transforms.Resize((224, 224)),  
+            transforms.ToTensor(),            
+        ])
+        
+        
+        with open(img_path, 'rb') as file:
+            corrupted_data = file.read()
+        
+        # clean corrupted images. strip the last byte
+        img = Image.open(io.BytesIO(corrupted_data))
+        
+        
+        img = img.convert("RGB")
+        
+        buffer = io.BytesIO()
+        img.save(buffer, format="JPEG")
+        cleaned_data = buffer.getvalue()
+        
+        im = Image.open(io.BytesIO(cleaned_data))
+        image_batch = transform(im)
+        
            
    
         if self.img_preprocess:
@@ -82,7 +106,7 @@ class Meme_DataSet():
             
             )
       
-       
+        
         return {'image': image['pixel_values'], 'input_ids': text_batch['input_ids'], 'attention': text_batch['attention_mask']}
     
     def getimages(self, idx):
@@ -99,7 +123,7 @@ class Meme_DataSet():
             
         return self.images
     
-    
+
 
 
         
