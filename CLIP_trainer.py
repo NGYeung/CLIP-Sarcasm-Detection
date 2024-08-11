@@ -46,7 +46,6 @@ def custom_collate_fn(batch):
     tensor_images = torch.stack(images, dim = 0)
    
     tensor_attention = torch.stack(pat, dim = 0)
-    print(tensor_attention.size(), text_tensor.size())
      
     #return {'image': tensor_images, 'input_ids': stacked_tensor, 'attention': tensor_attention}
     return tensor_images, text_tensor.long(), tensor_attention
@@ -81,7 +80,7 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
         optimizer.step()
 
         # calculate acc per minibatch
-        #_,text_logits = loss_fn.logits(img_features, txt_features)
+        text_logits,_ = loss_fn.logits(img_features, txt_features)
         # The following quoted because we don't need labels.
         #labels = loss_fn.get_ground_truth(img_features.device, txt_features.shape[0])
         #sum_correct_pred += (torch.argmax(logits,dim=-1) == labels).sum().item()
@@ -92,13 +91,11 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
     #acc = round(sum_correct_pred/total_samples,4)*100
     ###Acc and Loss
     epoch_loss = np.mean(epoch_loss)
-    return epoch_loss
+    return epoch_loss, text_logits
 
-def evaluation(text,val_data_loader, model, loss_fn, device, batch_size, ratio = 0.05):
+def evaluation(model, loss_fn, device, batch_size, ratio = 0.05, test_img_dir="Datasets/Images_test/",test_text_path="Datasets/TEXT_test_sentences.cvs",):
     
     
-    test_img_dir = "Datasets/Images_test/"
-    test_text_path = "Datasets/TEXT_test_sentences.cvs"
    
     # Create the dataset and dataloader
     test_dataset = Meme_DataSet(img_dir = test_img_dir, text_file = test_text_path)
@@ -138,7 +135,7 @@ def evaluation(text,val_data_loader, model, loss_fn, device, batch_size, ratio =
     return epoch_loss, logits_t
 
 
-def train(batch_size, epochs, ratio = 0.05):
+def train(batch_size, epochs, ratio = 0.25, load = 0):
     """
     LOAD DATA ratio =  the ratio of data used for training.
     """
@@ -147,14 +144,15 @@ def train(batch_size, epochs, ratio = 0.05):
     
     
     
-    
-    i_dir = "Datasets/Images_debug/"
-    t_dir = "Datasets/text_debug.csv"
+    #i_dir = "Datasets/Images_debug"
+    #t_dir = 'Datasets/text_debug.csv'
+    i_dir = "Datasets/Images/"
+    t_dir = "Datasets/TEXT_sentences.csv"
    
     # Create the dataset and dataloader
     train_dataset = Meme_DataSet(img_dir = i_dir, text_file = t_dir)
-    #subset_idx = np.random.randint(0,len(train_dataset),int(round(len(train_dataset)*ratio)))
-    #train_subset = Subset(train_dataset, subset_idx)
+    subset_idx = np.random.randint(0,len(train_dataset),int(round(len(train_dataset)*ratio)))
+    train_subset = Subset(train_dataset, subset_idx)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=8,collate_fn=custom_collate_fn)
     
     #eval_dataset = Meme_DataSet(img_dir = i_dir)
@@ -169,28 +167,41 @@ def train(batch_size, epochs, ratio = 0.05):
         device = torch.device("cuda")  # Use GPU
         #model = nn.DataParallel(model,device_ids=[0,1,2,3])
     else:
+        print('\n \t Running on CPU.')
         device = torch.device("cpu")  
         model = nn.DataParallel(model,device_ids=[0,1,2,3])
         
     #model = nn.DataParallel(model,device_ids=[0,1,2,3]) #unquote when we have multiple gpus my laptop is trash
-    model.to(device)
-    print("\n \t ----------- Model Loaded------------")
-    print("\t *Total Params* = ",sum(p.numel() for p in model.parameters()))
-    print("\t *Trainable Params* = ",sum(p.numel() for p in model.parameters() if p.requires_grad))
+    
 
     """
     Train
     """
+    
+        
     loss_fn = I_T_ContrastiveLoss(temperature=0.1) # change temperature if needed
     optimizer = torch.optim.Adam(model.parameters(),lr=1e-4)  #and change learning rate if not working
     print("\n \t ----------- Model Loaded------------")
+    
+    
+    if load>0: 
+        print('\n \t ------------ loading epoch ', str(load), ' ------------')
+        model, optimizer, epoch = load_checkpoint('/scratch/borcea_root/borcea0/yiyangl/model_states/checkpoint_'+str(load)+'.pt',model, optimizer)
+    else:
+        epoch = 0
+        
+    model.to(device)
+    print("\n \t ----------- Model Loaded------------")
+    print("\t *Total Params* = ",sum(p.numel() for p in model.parameters()))
+    print("\t *Trainable Params* = ",sum(p.numel() for p in model.parameters() if p.requires_grad))
+        
 
-    for epoch in range(epochs):
+    while epoch < epochs:
 
         begin = time.time()
 
         ###Training
-        loss = one_epoch(train_loader, model, optimizer, loss_fn, device)
+        loss, logits = one_epoch(train_loader, model, optimizer, loss_fn, device)
         ###Validation
         #val_loss, val_acc = val_one_epoch(val_loader, model, loss_fn, device)
 
@@ -198,9 +209,29 @@ def train(batch_size, epochs, ratio = 0.05):
         print("\t Training loss: ",round(loss,4))
         print('\t Training time current epoch: ', round((time.time()-begin),2), 'seconds')
         
-
-
+        save_checkpoint(model, optimizer, epoch, '/scratch/borcea_root/borcea0/yiyangl/model_states/checkpoint_'+str(epoch+1)+'.pt')
+        epoch += 1
+        
+        
     torch.save(model.state_dict(),'clip_for_meme.pth')
+        
+        
+def save_checkpoint(model, optimizer, epoch, filename):
+    checkpoint = {
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+        'epoch': epoch
+    }
+    torch.save(checkpoint, filename)
+
+def load_checkpoint(filename, model, optimizer=None):
+    checkpoint = torch.load(filename)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    if optimizer:
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+    epoch = checkpoint['epoch']
+    return model, optimizer, epoch
+
 
 if __name__=="__main__":
     train(batch_size=5, epochs=3)
