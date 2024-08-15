@@ -27,15 +27,22 @@ We used the <a href ='https://www.kaggle.com/datasets/williamscott701/memotion-d
 
 Dataset Class: Datasets/MemeDataset.py
 
-Selected features: Images and Captions.
+Features: Images and Captions.
 
-Training set size: 7000
 
-Testing set size: 2000
+<b>Dataset characterization </b>
 
-*Text Preprocessing: special characters, watermarks, dates.*
+- Training set size: 7000
 
-*Image Preprocessing: file corruption, re-size*
+- Text format: cvs file
+
+- Image format: jpg
+
+- Testing set size: 2000
+
+- Text Preprocessing: special characters, watermarks, dates.
+
+- Image Preprocessing: file corruption, re-size 
 
 
 
