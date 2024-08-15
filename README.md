@@ -10,7 +10,7 @@ Objective 2: Build a ranking system for <b> MEMES </b>
 
 *MODEL: A variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilledBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.*
 
-# Methodolog
+# Methodology
 
 
 Here is a flow chart drawn by an awesome artist. (ME.)
