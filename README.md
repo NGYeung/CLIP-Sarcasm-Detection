@@ -40,7 +40,7 @@ Features: Images and Captions.
 
 - Testing set size: 2000
 
-- Text Preprocessing: special characters, watermarks, dates.
+- Text Preprocessing: strip all special characters, watermarks, dates. Lemmatization.
 
 - Image Preprocessing: file corruption, re-size 
 
