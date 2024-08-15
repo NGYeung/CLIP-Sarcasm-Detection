@@ -1,14 +1,15 @@
 # Exploring MEMEs using constractive learning
 
+<b> This repository provides a simplified implementation of a variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilledBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.</b>
 
+The repository also includes notebooks for training the models to fullfill the following tasks.
 
-Objective 1：Read the sarcasm! Is this meme <b> sarcastic </b> or not? -- A classifier
+Objective 1： Read the sarcasm! Is this meme <b> sarcastic </b> or not? -- A classifier
 
 Objective 2: Build a ranking system for <b> MEMES </b>
 
 <img src="https://static.wixstatic.com/media/bb1bd6_5798c09022ba43249a38bfea9be1db34~mv2.png/v1/fill/w_980,h_560,al_c,q_90,usm_0.66_1.00_0.01,enc_auto/bb1bd6_5798c09022ba43249a38bfea9be1db34~mv2.png" width="400">
 
-*MODEL: A variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilledBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.*
 
 # Methodology
 
