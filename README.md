@@ -2,7 +2,7 @@
 
 
 
-Objective 1：Read the sarcasm! Is this meme <b> sarcastic </b> or not? -- A classification 
+Objective 1：Read the sarcasm! Is this meme <b> sarcastic </b> or not? -- A classifier
 
 Objective 2: Build a ranking system for <b> MEMES </b>
 
