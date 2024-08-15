@@ -40,9 +40,13 @@ Features: Images and Captions.
 
 - Testing set size: 2000
 
-- Text Preprocessing: strip all special characters, watermarks, dates. Lemmatization.
+- Text Preprocessing: strip all special characters, watermarks, dates, and stop words. Lemmatization.
 
-- Image Preprocessing: file corruption, re-size 
+- Image Preprocessing: file corruption, re-size
+
+
+  
+Three classes are included in MemeDatasets.py:
 
 
 
