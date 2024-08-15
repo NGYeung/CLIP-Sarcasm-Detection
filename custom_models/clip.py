@@ -37,6 +37,60 @@ from transformers import DistilBertModel
 
 
 
+"""
+Image-Text-Contrastive loss.
+Reference: https://arxiv.org/pdf/2103.00020v1 the CLIP Paper
+Reference for the "target": https://arxiv.org/pdf/2103.00020v1
+"""
+
+class I_T_ContrastiveLoss_wl(nn.Module):
+    def __init__(self, temperature):
+        super().__init__()
+        self.scale = 1.0/temperature
+
+
+    def logits(self, image_features, text_features):
+        V_image = self.scale * image_features @ text_features.T
+        V_text = self.scale * text_features @ image_features.T
+        return V_image, V_text
+
+    def forward(self, image_features, text_features, labels,  visualize = 0):
+        
+        device = image_features.device
+        V_image, V_text = self.logits(image_features, text_features)
+        dim = image_features.size(0) #need to check the dimension here 
+
+        
+        targets = F.softmax(self.scale * (image_features @ image_features.T + text_features @ text_features.T)/2, dim = -1)
+
+        
+        #----------------------------
+        
+        if visualize:
+            sns.heatmap(V_text.detach().numpy(), annot=False, cmap='viridis')
+
+
+            plt.title('TEST - logits')
+
+            plt.show()
+            
+            
+            sns.heatmap(targets.detach().numpy(), annot=False, cmap='viridis')
+
+
+            plt.title('TEST - targets')
+
+            plt.show()
+        
+        
+        #----------------------------------
+        total_loss = (F.cross_entropy(V_text, targets,reduction='none') + F.cross_entropy(V_image, targets.T ,reduction='none')  )/2
+       
+
+        return total_loss
+
+
+
 
 
 """
@@ -56,21 +110,46 @@ class I_T_ContrastiveLoss(nn.Module):
         V_text = self.scale * text_features @ image_features.T
         return V_image, V_text
 
-    def forward(self, image_features, text_features):
+    def forward(self, image_features, text_features, visualize = 0):
         
         device = image_features.device
         V_image, V_text = self.logits(image_features, text_features)
         dim = image_features.size(0) #need to check the dimension here 
 
         
-        target = self.scale * (image_features @ image_features.T + text_features @ text_features.T)/2
+        targets = F.softmax(self.scale * (image_features @ image_features.T + text_features @ text_features.T)/2, dim = -1)
+        
+  
+		
+        
+        
+        #----------------------------
+        
+        if visualize:
+            sns.heatmap(V_text.detach().numpy(), annot=False, cmap='viridis')
 
-        total_loss = (
-            F.cross_entropy(V_image, target) +
-            F.cross_entropy(V_text, target)
-        ) / 2
 
-        return total_loss
+            plt.title('TEST - logits')
+
+            plt.show()
+            
+            
+            sns.heatmap(targets.detach().numpy(), annot=False, cmap='viridis')
+
+
+            plt.title('TEST - targets')
+
+            plt.show()
+        
+        
+        #----------------------------------
+        total_loss = (F.cross_entropy(V_text, targets,reduction='none') + F.cross_entropy(V_image, targets.T ,reduction='none')  )/2
+        
+        
+     
+        
+
+        return total_loss.mean()
 
 
 
@@ -82,7 +161,7 @@ class I_T_ContrastiveLoss(nn.Module):
 CLIP with 1) Doc2Vec / BERT - DINOv2 / TBD
 """  
 class clip_for_meme(nn.Module):
-    def __init__(self, text_encoder='BERT', image_encoder='DINOv2', embedding_size=768 ,projection_size=256):
+    def __init__(self, text_encoder='BERT', image_encoder='DINOv2', embedding_size=768 ,projection_size=1024):
         
         '''
         text_encoder = 'Doc2Vec' or 'BERT'
