@@ -25,11 +25,19 @@ Here is a flow chart drawn by an awesome artist. (ME.)
 
 We used the <a href ='https://www.kaggle.com/datasets/williamscott701/memotion-dataset-7k'> MEMOTION DATASET 7K </a> as our training and testing dataset. 
 
+Dataset Class: Datasets/MemeDataset.py
+
 Selected features: Images and Captions.
 
 Training set size: 7000
 
 Testing set size: 2000
+
+*Text Preprocessing: special characters, watermarks, dates.*
+
+*Image Preprocessing: file corruption, re-size*
+
+
 
 # Structure of the repository
 
