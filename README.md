@@ -15,9 +15,15 @@ Objective 2: Build a ranking system for <b> MEMES </b>
 
 
 Here is a flow chart drawn by an awesome artist. (ME.)
-yy
+
+
+<br>
+
+The training phase:
 
 <img src = 'readme-images/class_1.jpg' width = 600>
+
+The classification:
 
 <img src = 'readme-images/class_2.jpg' width = 600>
 
