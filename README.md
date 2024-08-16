@@ -17,7 +17,9 @@ Objective 2: Build a ranking system for <b> MEMES </b>
 Here is a flow chart drawn by an awesome artist. (ME.)
 yy
 
-<img src = 'readme-images/flowchart.jpg'>
+<img src = 'readme-images/class_1.jpg'>
+
+<img src = 'readme-images/class_2.jpg'>
 
 <br>
 
