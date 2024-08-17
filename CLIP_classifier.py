@@ -65,7 +65,11 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
     epoch_loss = []
     sum_correct_pred = 0
     total_samples = 0
-    
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
+
     model.train()
  
     ###Iterating over data loader
@@ -83,15 +87,18 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
        
         vis = 0
         if i%15 == 0: 
-            vis = 0
-        b_loss = loss_fn(img_features, txt_features,labels, visualize = vis)
+            vis = 1
+        loss_fn.set_labels(labels)
+        b_loss = loss_fn(img_features, txt_features)
+       
         logits,_ = loss_fn.logits(txt_features, img_features)
         epoch_loss.append(b_loss.item())      
         #Backward
         b_loss.backward() #compute gradients
         optimizer.step()
         #labels = torch.arange(logits.shape[0], device=device, dtype=torch.long)
-       
+        
+        
         sum_correct_pred += (labels[torch.argmax(logits,dim=-1)] == labels).sum().item()
         total_samples += len(labels)
 
@@ -107,7 +114,8 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
     acc = round(sum_correct_pred/total_samples,4)
     ###Acc and Loss
     epoch_loss = np.mean(epoch_loss)
-    return epoch_loss, text_logits, acc
+    print([tp,fp,tn,fn])
+    return epoch_loss, text_logits, acc, [tp,fp,tn,fn]
 
 
 def classification(model, loss_fn, device, batch_size, ratio = 0.02, test_img_dir="Datasets/Images_test/",test_text_path="Datasets/TEXT_test_sentences.csv"):
@@ -125,6 +133,10 @@ def classification(model, loss_fn, device, batch_size, ratio = 0.02, test_img_di
     epoch_loss = []
     sum_correct_pred = 0
     total_samples = 0
+    tp = 0
+    fp = 0
+    tn = 0
+    fn = 0
 
     model.eval()
 
@@ -147,6 +159,7 @@ def classification(model, loss_fn, device, batch_size, ratio = 0.02, test_img_di
             epoch_loss.append(_loss.item())
             labels = torch.arange(logits.shape[0], device=device, dtype=torch.long)
             sum_correct_pred += (torch.argmax(logits,dim=-1) == labels).sum().item()
+            tp += (torch.argmax(logits,dim=-1) == labels).sum().item()
             total_samples += len(labels)
             
             # calculate acc per minibatch
@@ -224,7 +237,7 @@ def train(batch_size, epochs, ratio = 0.5, load = 0):
         begin = time.time()
 
         ###Training
-        loss, logits, acc = one_epoch(train_loader, model, optimizer, loss_fn, device)
+        loss, logits, acc. auclist = one_epoch(train_loader, model, optimizer, loss_fn, device)
         ###Validation
         #val_loss, val_acc = val_one_epoch(val_loader, model, loss_fn, device)
 
