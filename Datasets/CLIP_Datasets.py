@@ -71,12 +71,7 @@ class Meme_DataSet():
                                transforms.ToTensor()
                                 ])
         
-        
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),  
-            transforms.ToTensor(),            
-        ])
-        
+
         
         with open(img_path, 'rb') as file:
             corrupted_data = file.read()
@@ -133,6 +128,16 @@ class Meme_DataSet():
         return self.images
     
 
+    
+    
+    
+    
+    
+    
+    
+    
+#
+#-----------------------------
 class Meme_Classify():
     
         
@@ -154,6 +159,7 @@ class Meme_Classify():
         self.images = []
         self.text = []
         self.label = []
+        self.raw_label = []
 
     def __len__(self):
         item_list = os.listdir(self.img_dir)
@@ -161,18 +167,27 @@ class Meme_Classify():
 
     def __getitem__(self, idx):
         
+  
         maxlength = 128 # REMEMBER TO ADJUST THIS!!!!!!!!
         text = pd.read_csv(self.text_path)
         label = pd.read_csv(self.labelpath)
         
-        if list(label['sarcasm'])[idx] == 1:
+        label = label['sarcasm'].tolist()
+        l = label[idx]
+        if l == 1:
             self.label = 'a sarcastic meme'
+            self.raw_label = l
+            
+ 
         else:
             self.label = 'a regular meme'
-            
+            self.raw_label = l
+        
+
         #Lemmatization and filter stop words
        
-        self.text = list(text['text_corrected'])[idx]
+        tt = text['text_corrected'].tolist()
+        self.text = tt[idx]
         doc = self.nlp(self.text)
         lemmatized_words = [token.lemma_ for token in doc if not token.is_stop]
         self.text = ' '.join(lemmatized_words)
@@ -184,17 +199,12 @@ class Meme_Classify():
      
         
         transform = transforms.Compose([
-                               transforms.ToPILImage(),
                                transforms.Resize((224, 224)),
-                               transforms.ToTensor()
+                               transforms.ToTensor(),
+                               #transforms.Normalize((0.48145466, 0.4578275, 0.40821073),(0.26862954, 0.26130258, 0.27577711)),
                                 ])
         
-        
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),  
-            transforms.ToTensor(),            
-        ])
-        
+    
         
         with open(img_path, 'rb') as file:
             corrupted_data = file.read()
@@ -235,7 +245,7 @@ class Meme_Classify():
             )
       
         
-        return {'image': image['pixel_values'], 'input_ids': text_batch['input_ids'], 'attention': text_batch['attention_mask'], 'label': self.label}
+        return {'image': image['pixel_values'], 'input_ids': text_batch['input_ids'], 'attention': text_batch['attention_mask'], 'label': self.raw_label}
     
     def getimages(self, idx):
         '''
@@ -280,7 +290,7 @@ class Meme_Verify():
 
     def __getitem__(self, idx):
         
-        maxlength = 80 # REMEMBER TO ADJUST THIS!!!!!!!!
+        maxlength = 128 # REMEMBER TO ADJUST THIS!!!!!!!!
     
         label = pd.read_csv(self.labelpath)
         if list(label['sarcasm'])[idx] == 1:
@@ -298,16 +308,12 @@ class Meme_Verify():
      
         
         transform = transforms.Compose([
-                               transforms.ToPILImage(),
+                               
                                transforms.Resize((224, 224)),
-                               transforms.ToTensor()
+                               transforms.ToTensor().permute(2, 0, 1).float()
                                 ])
         
-        
-        transform = transforms.Compose([
-            transforms.Resize((224, 224)),  
-            transforms.ToTensor(),            
-        ])
+       
         
         
         with open(img_path, 'rb') as file:
