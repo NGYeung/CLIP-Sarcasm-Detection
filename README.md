@@ -73,3 +73,8 @@ Three classes are included in MemeDatasets.py:
 *The trainer module "CLIP_trainer.py" and training note of the model is in the root folder.*
 
 *The Datasets folder includes a sample of images and texts and the Dataset class in CLIP_Datasets.py*
+
+
+# Results:
+
+prediction loss: 2.640838384628296  accuracy:  0.0714
