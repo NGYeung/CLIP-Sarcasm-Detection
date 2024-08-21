@@ -230,6 +230,7 @@ class clip_for_meme(nn.Module):
         self.flat = nn.Flatten()
         self.proj_into_class = nn.Sequential(
             nn.Linear(projection_size**2, 128),
+            nn.BatchNorm1d(128)
             nn.Linear(128, 1),
             nn.Sigmoid(),
             )
@@ -237,7 +238,6 @@ class clip_for_meme(nn.Module):
         for p in self.proj_into_class.parameters():
                 p.requires_grad = True
         self.proj_into_class.apply(self.init_weights)
-            
      
         
         
