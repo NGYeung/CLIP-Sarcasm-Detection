@@ -19,13 +19,9 @@ Here is a flow chart drawn by an awesome artist. (ME.)
 
 <br>
 
-The training phase:
+<img src = 'readme-images/class_1.jpg' width = 800>
 
-<img src = 'readme-images/class_1.jpg' width = 600>
 
-The classification:
-
-<img src = 'readme-images/class_2.jpg' width = 600>
 
 <br>
 
