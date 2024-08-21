@@ -19,7 +19,7 @@ Here is a flow chart drawn by an awesome artist. (ME.)
 
 <br>
 
-
+<img src = 'readme-images/class.jpg' width = 800>
 
 
 
