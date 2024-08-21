@@ -73,4 +73,8 @@ Three classes are included in MemeDatasets.py:
 
 # Results:
 
-prediction loss: 2.640838384628296  accuracy:  0.0714
+Epoch :  6
+
+Prediction Accuracy :  0.6978
+
+AUROC :  0.8179981366410167
