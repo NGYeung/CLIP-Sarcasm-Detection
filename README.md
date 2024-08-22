@@ -66,7 +66,7 @@ Three classes are included in MemeDatasets.py:
 
 *The implementation of clip model is in the "custom_models" folder. *
 
-*The trainer module "CLIP_trainer.py" and training note of the model is in the root folder.*
+*The trainer module "CLIP_Classifier2.py" and training note of the model is in the root folder.*
 
 *The Datasets folder includes a sample of images and texts and the Dataset class in CLIP_Datasets.py*
 
