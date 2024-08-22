@@ -73,8 +73,10 @@ Three classes are included in MemeDatasets.py:
 
 # Results:
 
-Epoch :  6
+Epoch :  9
 
-Prediction Accuracy :  0.7478
+Accuracy :  0.7379
 
-AUROC :  0.8179981366410167
+AUROC :  0.8197169658569992
+
+f1 :  0.7171293248302494
