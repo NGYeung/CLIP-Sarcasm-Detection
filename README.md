@@ -37,7 +37,7 @@ Features: Images and Captions.
 
 <b>Dataset characterization </b>
 
-- Training set size: 7000
+- Dataset size: 7000. (6931 clean data.) Train-test split = 8:2
 
 - Text format: cvs file
 
