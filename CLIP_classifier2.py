@@ -63,6 +63,9 @@ def custom_collate_fn(batch):
 
 
 def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
+    '''
+    Train the model for one epoch
+    '''
     
     epoch_loss = []
     sum_correct_pred = 0
