@@ -1,6 +1,6 @@
 # Exploring MEMEs using constractive learning
 
-<b> This repository provides a simplified implementation of a variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilledBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.</b>
+<b> This repository provides a simplified implementation of a variation of <a href="https://openai.com/index/clip/">CLIP by OPEN AI</a> with Gensim Doc2Vec/Hugging Face DistilBERT and Facebook DINOv2/Google AI EfficientNet as the text and image encoders, respectively.</b>
 
 The repository also includes notebooks for training the models to fullfill the following tasks.
 
