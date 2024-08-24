@@ -149,9 +149,12 @@ def one_epoch(train_data_loader, model, optimizer, loss_fn, device):
 
 
 def classification(test_loader, model, loss_fn, device):
+    """ The evalueation function for the model
+    """
     
     
-  
+    
+    
     epoch_loss = []
     sum_correct_pred = 0
     total_samples = 0
