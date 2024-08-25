@@ -73,10 +73,4 @@ Three classes are included in MemeDatasets.py:
 
 # Results:
 
-Epoch :  9
-
-Accuracy :  0.7379
-
-AUROC :  0.8197169658569992
-
-f1 :  0.7171293248302494
+accuracy:  0.7436 auroc 0.7969 f1 0.6392
